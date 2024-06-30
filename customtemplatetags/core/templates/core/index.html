@@ -59,7 +59,7 @@
             <div class="mb-3">
                 <label for="{{ form.password.id_for_label }}" class="form-label">{{ form.password.label }}</label>
 
-                {{ form.password|append_field_class:"form-control" }}
+                {{ form.password|append_field_class:"form-control"|set_field_attr:"minlength=10,maxlength=20" }}
 
                 {% if form.password.errors %}
                     <ul class="errorlist list-unstyled">

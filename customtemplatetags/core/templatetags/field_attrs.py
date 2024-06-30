@@ -22,7 +22,8 @@ def boundfield_required(func):
     def wrapper(value, *args, **kwargs):
         if not isinstance(value, BoundField):
             raise TypeError(
-                f"The '{func.__name__}' filter can only be applied to form fields (BoundField instances)."
+                f"The '{
+                    func.__name__}' filter can only be applied to form fields (BoundField instances)."
             )
         return func(value, *args, **kwargs)
     return wrapper
@@ -65,16 +66,16 @@ def set_field_attr(value: BoundField, arg: str) -> BoundField:
             val = val.strip()
 
             # Validate numeric attributes
-            numeric_keys = ["max", "min", "step",
-                            "size", "maxlength", "cols", "rows"]
+            numeric_keys = ["min", "max", "step",
+                            "size", "minlength", "maxlength", "cols", "rows"]
             if key in numeric_keys:
                 try:
-                    if key in ["size", "maxlength", "cols", "rows"]:
+                    if key in ["size", "minlength", "maxlength", "cols", "rows"]:
                         attrs[key] = int(val)
                     else:
                         attrs[key] = float(val)
                 except ValueError:
-                    if key in ["size", "maxlength", "cols", "rows"]:
+                    if key in ["size", "minlength", "maxlength", "cols", "rows"]:
                         expected_type = "integer"
                     else:
                         expected_type = "floating-point"
