@@ -17,7 +17,7 @@
             <div class="mb-3">
                 <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
 
-                {{ form.first_name|set_field_attr:"class=form-control,step=150.6" }}
+                {{ form.first_name|set_attr:"class=form-control,step=150.6" }}
 
                 {% if form.first_name.errors %}
                     <ul class="errorlist list-unstyled">
@@ -31,7 +31,7 @@
             <div class="mb-3">
                 <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
 
-                {{ form.last_name|append_field_class:"form-control" }}
+                {{ form.last_name|append_class:"form-control" }}
 
                 {% if form.last_name.errors %}
                     <ul class="errorlist list-unstyled">
@@ -45,8 +45,8 @@
             <div class="mb-3">
                 <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
 
-                {{ form.email|append_field_class:"form-control" }}
-
+                {{ form.email|set_attr:"class=form-control"|remove_class:"form-control"|append_class:"test-email aaaa , fdsfsd fsd  ffds,fds, fd,fds ,fsd,fsd" }}
+ 
                 {% if form.email.errors %}
                     <ul class="errorlist list-unstyled">
                         {% for error in form.email.errors %}
@@ -59,7 +59,7 @@
             <div class="mb-3">
                 <label for="{{ form.password.id_for_label }}" class="form-label">{{ form.password.label }}</label>
 
-                {{ form.password|append_field_class:"form-control"|set_field_attr:"minlength=10,maxlength=20" }}
+                {{ form.password|append_class:"form-control"|set_attr:"minlength=10,maxlength=20" }}
 
                 {% if form.password.errors %}
                     <ul class="errorlist list-unstyled">
@@ -73,7 +73,7 @@
             <div class="mb-3">
                 <label for="{{ form.age.id_for_label }}" class="form-label">{{ form.age.label }}</label>
 
-                {{ form.age|set_field_attr:"class=form-control,max=50,min=10,step=2.5" }}
+                {{ form.age|set_attr:"class=form-control,max=50,min=10,step=2.5" }}
 
                 {% if form.age.errors %}
                     <ul class="errorlist list-unstyled">
@@ -85,7 +85,7 @@
             </div>
 
             <div class="mb-3 form-check">
-                {{ form.agree|set_field_attr:"class=form-check-input" }}
+                {{ form.agree|set_attr:"class=form-check-input" }}
 
                 <label class="form-check-label" for="{{ form.agree.id_for_label }}">
                     I agree to the terms and conditions

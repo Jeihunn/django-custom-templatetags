@@ -29,9 +29,9 @@ def boundfield_required(func):
     return wrapper
 
 
-@register.filter(name="set_field_attr")
+@register.filter(name="set_attr")
 @boundfield_required
-def set_field_attr(value: BoundField, arg: str) -> BoundField:
+def set_attr(value: BoundField, arg: str) -> BoundField:
     """
     Adds or updates HTML attributes for a Django form field widget dynamically.
 
@@ -41,10 +41,10 @@ def set_field_attr(value: BoundField, arg: str) -> BoundField:
 
     Usage:
     1. To set a single attribute:
-    {{ form.email|set_field_attr:"placeholder=Email Address" }}
+    {{ form.email|set_attr:"placeholder=Email Address" }}
 
     2. To set multiple attributes:
-    {{ form.email|set_field_attr:"class=form-control,placeholder=Email Address" }}
+    {{ form.email|set_attr:"class=form-control,placeholder=Email Address" }}
 
     Parameters:
     - value (BoundField): The form field instance to modify.
@@ -91,29 +91,29 @@ def set_field_attr(value: BoundField, arg: str) -> BoundField:
 
         except ValueError:
             raise TemplateSyntaxError(
-                f"Invalid format for set_field_attr filter: '{attribute}'. "
+                f"Invalid format for set_attr filter: '{attribute}'. "
                 "Use 'key=value' format."
             )
 
     return value
 
 
-@register.filter(name="remove_field_attr")
+@register.filter(name="clear_attr")
 @boundfield_required
-def remove_field_attr(value: BoundField, attr_names: str) -> BoundField:
+def clear_attr(value: BoundField, attr_names: str) -> BoundField:
     """
     Removes specified HTML attributes from a Django form field widget.
 
     This template filter allows you to dynamically remove one or more HTML attributes
-    (e.g., 'class', 'placeholder') from a Django form field widget. It supports removing
-    multiple attributes in a single call by providing a comma-separated list of attribute names.
+    (e.g., 'class', 'placeholder') from a Django form field widget. Multiple attributes
+    can be removed simultaneously by providing a comma-separated list of attribute names.
 
     Usage:
     1. To remove a single attribute:
-       {{ form.email|remove_field_attr:"class" }}
+       {{ form.email|clear_attr:"class" }}
 
     2. To remove multiple attributes:
-       {{ form.email|remove_field_attr:"class,placeholder" }}
+       {{ form.email|clear_attr:"class,placeholder" }}
 
     Parameters:
     - value (BoundField): The form field instance from which attributes will be removed.
@@ -126,42 +126,108 @@ def remove_field_attr(value: BoundField, attr_names: str) -> BoundField:
     TypeError: If the input is not a BoundField instance.
     """
     attrs = value.field.widget.attrs
+
     for attr_name in attr_names.split(","):
         attr_name = attr_name.strip()
+
+        # Check if the attribute exists and remove it
         if attr_name in attrs:
             del attrs[attr_name]
 
     return value
 
 
-@register.filter(name="append_field_class")
+@register.filter(name="append_class")
 @boundfield_required
-def append_field_class(value: BoundField, new_class: str) -> BoundField:
+def append_class(value: BoundField, new_classes: str) -> BoundField:
     """
-    Appends a CSS class to the 'class' attribute of a Django form field widget.
+    Appends CSS classes to the 'class' attribute of a Django form field widget.
 
-    This filter is used to add additional CSS classes to the 'class' attribute of a Django form field,
-    preserving existing classes.
+    This filter adds additional CSS classes to the existing 'class' attribute of a Django form field,
+    preserving already present classes.
 
     Usage:
-    {{ form.email|append_field_class:"new-class-name" }}
+    1. To append classes separated by commas:
+       {{ form.email|append_class:"new-class1,new-class2" }}
+
+    2. To append classes separated by spaces:
+       {{ form.email|append_class:"new-class1 new-class2" }}
+
+    3. To append classes separated by both commas and spaces:
+       {{ form.email|append_class:"new-class1,new-class2 new-class3" }}
 
     Parameters:
-    value: The form field (BoundField)
-    new_class: The CSS class to append
+    - value (BoundField): The form field instance to modify.
+    - new_classes (str): A string of CSS classes to append, separated by commas and/or spaces.
 
     Returns:
-    The form field with the appended CSS class
+    BoundField: The form field with the appended CSS classes.
 
     Raises:
-    TypeError: If the input is not a BoundField
+    TypeError: If the input is not a BoundField instance.
     """
     attrs = value.field.widget.attrs
-    current_classes = attrs.get("class", "").split()
+    current_classes = set(attrs.get("class", "").split())
 
-    # Add the new class if it's not already present
-    if new_class not in current_classes:
-        current_classes.append(new_class)
+    # Split new classes based on commas and spaces, then add them if not already present
+    for class_set in new_classes.split(","):
+        for class_name in class_set.split():
+            stripped_class_name = class_name.strip()
+            if stripped_class_name:
+                current_classes.add(stripped_class_name)
+
+    # Update the 'class' attribute with the modified list
+    attrs["class"] = " ".join(current_classes)
+
+    return value
+
+
+@register.filter(name="remove_class")
+@boundfield_required
+def remove_class(value: BoundField, class_names: str) -> BoundField:
+    """
+    Removes specified CSS classes from the 'class' attribute of a Django form field widget.
+
+    This filter allows you to dynamically remove one or more CSS classes from the 'class'
+    attribute of a Django form field widget. Multiple classes can be removed simultaneously
+    by providing a string of class names separated by commas and/or spaces.
+
+    Usage:
+    1. To remove classes separated by commas:
+       {{ form.email|remove_class:"old-class1,old-class2" }}
+
+    2. To remove classes separated by spaces:
+       {{ form.email|remove_class:"old-class1 old-class2" }}
+
+    3. To remove classes separated by both commas and spaces:
+       {{ form.email|remove_class:"old-class1,old-class2 old-class3" }}
+
+    Parameters:
+    - value (BoundField): The form field instance from which classes will be removed.
+    - class_names (str): A string of CSS class names to remove from the 'class' attribute, separated by commas and/or spaces.
+
+    Returns:
+    BoundField: The form field with the specified classes removed from the 'class' attribute.
+
+    Raises:
+    TypeError: If the input is not a BoundField instance.
+    """
+    attrs = value.field.widget.attrs
+
+    # Get current classes as a set
+    current_classes = set(attrs.get("class", "").split())
+
+    # Split class names based on commas and spaces, then remove them if present
+    for class_set in class_names.split(","):
+        for class_name in class_set.split():
+            stripped_class_name = class_name.strip()
+            if stripped_class_name in current_classes:
+                current_classes.remove(stripped_class_name)
+
+    # Update the 'class' attribute with the modified list or remove it if empty
+    if current_classes:
         attrs["class"] = " ".join(current_classes)
+    else:
+        del attrs["class"]
 
     return value
