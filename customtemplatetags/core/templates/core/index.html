@@ -17,8 +17,8 @@
             <div class="mb-3">
                 <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
 
-                {{ form.first_name|append_field_class:"form-control" }}
-                
+                {{ form.first_name|set_field_attr:"class=form-control,step=150.6" }}
+
                 {% if form.first_name.errors %}
                     <ul class="errorlist list-unstyled">
                         {% for error in form.first_name.errors %}
@@ -71,13 +71,13 @@
             </div>
 
             <div class="mb-3">
-                <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">{{ form.date_of_birth.label }}</label>
+                <label for="{{ form.age.id_for_label }}" class="form-label">{{ form.age.label }}</label>
 
-                {{ form.date_of_birth }}
+                {{ form.age|set_field_attr:"class=form-control,max=50,min=10,step=2.5" }}
 
-                {% if form.date_of_birth.errors %}
+                {% if form.age.errors %}
                     <ul class="errorlist list-unstyled">
-                        {% for error in form.date_of_birth.errors %}
+                        {% for error in form.age.errors %}
                             <li class="text-danger">{{ error }}</li>
                         {% endfor %}
                     </ul>
