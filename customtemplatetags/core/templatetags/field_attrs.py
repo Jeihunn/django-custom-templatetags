@@ -6,6 +6,10 @@ from django.template import Library, TemplateSyntaxError
 register = Library()
 
 
+NUMERIC_KEYS = frozenset(["min", "max", "step", "size", "minlength", "maxlength", "cols", "rows"])
+INTEGER_KEYS = frozenset(["size", "minlength", "maxlength", "cols", "rows"])
+
+
 def boundfield_required(func):
     """
     Decorator to ensure that the provided value is a BoundField instance."
@@ -41,14 +45,26 @@ def set_attr(value: BoundField, arg: str) -> BoundField:
 
     Usage:
     1. To set a single attribute:
-    {{ form.email|set_attr:"placeholder=Email Address" }}
+       {{ form.email|set_attr:"placeholder=Email Address" }}
+       Sets the 'placeholder' attribute of the 'email' form field to 'Email Address'.
 
     2. To set multiple attributes:
-    {{ form.email|set_attr:"class=form-control,placeholder=Email Address" }}
+       {{ form.email|set_attr:"class=form-control,placeholder=Email Address" }}
+       Sets both 'class' and 'placeholder' attributes of the 'email' form field.
+
+    3. To set a boolean attribute:
+       {{ form.email|set_attr:"required" }}
+       Sets the 'required' attribute of the 'email' form field with a truthy value.
+
+    4. To set numeric attributes:
+       {{ form.age|set_attr:"min=18,max=100" }}
+       Sets the 'min' and 'max' attributes of the 'age' form field to 18 and 100, respectively.
 
     Parameters:
     - value (BoundField): The form field instance to modify.
-    - arg (str): The attribute(s) to set or update in key=value format, comma-separated for multiple attributes.
+    - arg (str): A string specifying the attribute(s) to set or update. Attributes are provided in key=value format,
+                comma-separated for multiple attributes. If no value is provided (e.g., 'required'), the attribute
+                is set with an empty string value.
 
     Returns:
     BoundField: The form field with the added or updated HTML attributes.
@@ -60,40 +76,26 @@ def set_attr(value: BoundField, arg: str) -> BoundField:
     attrs = value.field.widget.attrs
 
     for attribute in arg.split(","):
-        try:
+        attribute = attribute.strip()
+        if "=" in attribute:
             key, val = attribute.split("=", 1)
             key = key.strip()
             val = val.strip()
 
-            # Validate numeric attributes
-            numeric_keys = ["min", "max", "step",
-                            "size", "minlength", "maxlength", "cols", "rows"]
-            if key in numeric_keys:
+            # Handle numeric attributes
+            if key in NUMERIC_KEYS:
                 try:
-                    if key in ["size", "minlength", "maxlength", "cols", "rows"]:
-                        attrs[key] = int(val)
-                    else:
-                        attrs[key] = float(val)
+                    attrs[key] = int(val) if key in INTEGER_KEYS else float(val)
                 except ValueError:
-                    if key in ["size", "minlength", "maxlength", "cols", "rows"]:
-                        expected_type = "integer"
-                    else:
-                        expected_type = "floating-point"
-
+                    expected_type = "integer" if key in INTEGER_KEYS else "floating-point"
                     raise TemplateSyntaxError(
-                        f"The value '{val}' for '{
-                            key}' attribute must be a valid {expected_type}."
+                        f"The value '{val}' for '{key}' attribute must be a valid {expected_type}."
                     )
-
-            # Default handling for other attributes (including 'class')
             else:
                 attrs[key] = val
-
-        except ValueError:
-            raise TemplateSyntaxError(
-                f"Invalid format for set_attr filter: '{attribute}'. "
-                "Use 'key=value' format."
-            )
+        else:
+            # Set attribute with an empty string value if no value is provided
+            attrs[attribute] = ""
 
     return value
 
@@ -213,8 +215,6 @@ def remove_class(value: BoundField, class_names: str) -> BoundField:
     TypeError: If the input is not a BoundField instance.
     """
     attrs = value.field.widget.attrs
-
-    # Get current classes as a set
     current_classes = set(attrs.get("class", "").split())
 
     # Split class names based on commas and spaces, then remove them if present

@@ -12,7 +12,8 @@ class SampleForm(forms.Form):
     )
     email = forms.EmailField(
         widget=forms.EmailInput(
-            attrs={"class": "test-email", "placeholder": "Enter your email"})
+            attrs={"class": "test-email", "placeholder": "Enter your email"}),
+            required=False
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
@@ -20,7 +21,8 @@ class SampleForm(forms.Form):
     )
     age = forms.IntegerField(
         widget=forms.NumberInput(
-            attrs={"class": "test-age", "placeholder": "Age"})
+            attrs={"class": "test-age", "placeholder": "Age"}),
+        required=False
     )
     agree = forms.BooleanField(
         widget=forms.CheckboxInput(attrs={"class": "test-agree"}),

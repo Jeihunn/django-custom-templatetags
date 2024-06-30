@@ -45,7 +45,7 @@
             <div class="mb-3">
                 <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
 
-                {{ form.email|set_attr:"class=form-control"|remove_class:"form-control"|append_class:"test-email aaaa , fdsfsd fsd  ffds,fds, fd,fds ,fsd,fsd" }}
+                {{ form.email|set_attr:"class=form-control,placeholder=Email Address,   disabled,  data-tipe"|set_attr:"required"|clear_attr:"required"|set_attr:"style=background-color:red" }}
  
                 {% if form.email.errors %}
                     <ul class="errorlist list-unstyled">
@@ -73,7 +73,7 @@
             <div class="mb-3">
                 <label for="{{ form.age.id_for_label }}" class="form-label">{{ form.age.label }}</label>
 
-                {{ form.age|set_attr:"class=form-control,max=50,min=10,step=2.5" }}
+                {{ form.age|set_attr:"class=form-control,max=50,min=10,step=2.5"|set_attr:"readonly,required,disabled" }}
 
                 {% if form.age.errors %}
                     <ul class="errorlist list-unstyled">
@@ -83,6 +83,8 @@
                     </ul>
                 {% endif %}
             </div>
+
+            <input type="text" disabled>
 
             <div class="mb-3 form-check">
                 {{ form.agree|set_attr:"class=form-check-input" }}
