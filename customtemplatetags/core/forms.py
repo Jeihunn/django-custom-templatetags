@@ -17,7 +17,7 @@ class SampleForm(forms.Form):
     )
     password = forms.CharField(
         widget=forms.PasswordInput(
-            attrs={"class": "test-password", "placeholder": "Password"})
+            attrs={"placeholder": "Password"})
     )
     age = forms.IntegerField(
         widget=forms.NumberInput(

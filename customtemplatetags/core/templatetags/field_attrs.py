@@ -35,7 +35,7 @@ def boundfield_required(func):
 
 @register.filter(name="set_attr")
 @boundfield_required
-def set_attr(value: BoundField, arg: str) -> BoundField:
+def set_attr(value: BoundField, attributes_string: str) -> BoundField:
     """
     Adds or updates HTML attributes for a Django form field widget dynamically.
 
@@ -46,25 +46,21 @@ def set_attr(value: BoundField, arg: str) -> BoundField:
     Usage:
     1. To set a single attribute:
        {{ form.email|set_attr:"placeholder=Email Address" }}
-       Sets the 'placeholder' attribute of the 'email' form field to 'Email Address'.
 
     2. To set multiple attributes:
        {{ form.email|set_attr:"class=form-control,placeholder=Email Address" }}
-       Sets both 'class' and 'placeholder' attributes of the 'email' form field.
 
     3. To set a boolean attribute:
        {{ form.email|set_attr:"required" }}
-       Sets the 'required' attribute of the 'email' form field with a truthy value.
 
     4. To set numeric attributes:
        {{ form.age|set_attr:"min=18,max=100" }}
-       Sets the 'min' and 'max' attributes of the 'age' form field to 18 and 100, respectively.
 
     Parameters:
     - value (BoundField): The form field instance to modify.
-    - arg (str): A string specifying the attribute(s) to set or update. Attributes are provided in key=value format,
-                comma-separated for multiple attributes. If no value is provided (e.g., 'required'), the attribute
-                is set with an empty string value.
+    - attributes_string (str): A string specifying the attribute(s) to set or update. Attributes are provided in key=value format,
+                               comma-separated for multiple attributes. If no value is provided (e.g., 'required'), the attribute
+                               is set with an empty string value.
 
     Returns:
     BoundField: The form field with the added or updated HTML attributes.
@@ -75,7 +71,7 @@ def set_attr(value: BoundField, arg: str) -> BoundField:
     """
     attrs = value.field.widget.attrs
 
-    for attribute in arg.split(","):
+    for attribute in attributes_string.split(","):
         attribute = attribute.strip()
         if "=" in attribute:
             key, val = attribute.split("=", 1)
@@ -179,7 +175,8 @@ def append_class(value: BoundField, new_classes: str) -> BoundField:
                 current_classes.add(stripped_class_name)
 
     # Update the 'class' attribute with the modified list
-    attrs["class"] = " ".join(current_classes)
+    if current_classes:
+        attrs["class"] = " ".join(current_classes)
 
     return value
 
@@ -206,7 +203,8 @@ def remove_class(value: BoundField, class_names: str) -> BoundField:
 
     Parameters:
     - value (BoundField): The form field instance from which classes will be removed.
-    - class_names (str): A string of CSS class names to remove from the 'class' attribute, separated by commas and/or spaces.
+    - class_names (str): A string of CSS class names to remove from the 'class' attribute, 
+                        separated by commas and/or spaces.
 
     Returns:
     BoundField: The form field with the specified classes removed from the 'class' attribute.
@@ -227,7 +225,7 @@ def remove_class(value: BoundField, class_names: str) -> BoundField:
     # Update the 'class' attribute with the modified list or remove it if empty
     if current_classes:
         attrs["class"] = " ".join(current_classes)
-    else:
+    elif "class" in attrs:
         del attrs["class"]
 
     return value
