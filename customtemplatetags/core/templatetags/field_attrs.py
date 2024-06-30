@@ -26,8 +26,7 @@ def boundfield_required(func):
     def wrapper(value, *args, **kwargs):
         if not isinstance(value, BoundField):
             raise TypeError(
-                f"The '{
-                    func.__name__}' filter can only be applied to form fields (BoundField instances)."
+                f"The '{func.__name__}' filter can only be applied to form fields (BoundField instances)."
             )
         return func(value, *args, **kwargs)
     return wrapper
