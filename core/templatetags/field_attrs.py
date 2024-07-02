@@ -74,7 +74,7 @@ def set_attr(value: BoundField, attributes_string: str) -> BoundField:
     """
     def split_attributes(s):
         parts = []
-        current = []
+        current = ""
         escape_char = "\\"
         delimiter = ","
 
@@ -86,20 +86,20 @@ def set_attr(value: BoundField, attributes_string: str) -> BoundField:
             # the last added character is not an escape character,
             # append the accumulated characters in `current` to `parts` and clear `current`.
             if char == delimiter and (not current or current[-1] != escape_char):
-                parts.append("".join(current))
-                current.clear()
+                parts.append(current)
+                current = ""
             # If the character is an escape character and the next character is a delimiter,
             # append the delimiter to `current` and skip the next character.
             elif char == escape_char and i + 1 < len(s) and s[i + 1] == delimiter:
-                current.append(delimiter)
+                current += delimiter
                 i += 1
             else:
-                current.append(char)
+                current += char
             i += 1
 
         # Append any remaining characters in `current` to `parts`.
         if current:
-            parts.append("".join(current))
+            parts.append(current)
 
         return parts
 
