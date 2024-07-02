@@ -55,11 +55,15 @@ def set_attr(value: BoundField, attributes_string: str) -> BoundField:
     4. To set numeric attributes:
        {{ form.age|set_attr:"min=18,max=100" }}
 
+    5. To use commas within attribute values:
+       {{ form.email|set_attr:"placeholder=Email Address\, Username" }}
+
     Parameters:
     - value (BoundField): The form field instance to modify.
-    - attributes_string (str): A string specifying the attribute(s) to set or update. Attributes are provided in key=value format,
-                               comma-separated for multiple attributes. If no value is provided (e.g., 'required'), the attribute
-                               is set with an empty string value.
+    - attributes_string (str): A string specifying the attribute(s) to set or update. 
+                                Attributes are provided in key=value format, comma-separated for multiple attributes. 
+                                If no value is provided (e.g., 'required'), the attribute is set with an empty string value. 
+                                Use '\,' to include a literal comma in an attribute value.
 
     Returns:
     BoundField: The form field with the added or updated HTML attributes.
@@ -68,9 +72,33 @@ def set_attr(value: BoundField, attributes_string: str) -> BoundField:
     TypeError: If the input is not a BoundField instance.
     TemplateSyntaxError: If the attribute format is invalid or cannot be parsed correctly.
     """
+    def split_attributes(s):
+        parts = []
+        current = []
+        escape_char = "\\"
+        delimiter = ","
+
+        i = 0
+        while i < len(s):
+            char = s[i]
+            if char == delimiter and (not current or current[-1] != escape_char):
+                parts.append("".join(current))
+                current.clear()
+            elif char == escape_char and i + 1 < len(s) and s[i + 1] == delimiter:
+                current.append(delimiter)
+                i += 1
+            else:
+                current.append(char)
+            i += 1
+
+        if current:
+            parts.append("".join(current))
+
+        return parts
+
     attrs = value.field.widget.attrs
 
-    for attribute in attributes_string.split(","):
+    for attribute in split_attributes(attributes_string):
         attribute = attribute.strip()
         if "=" in attribute:
             key, val = attribute.split("=", 1)
