@@ -99,7 +99,7 @@ Removes specified CSS classes from the 'class' attribute of a form field widget.
 
 For a detailed explanation of using these custom template tags and filters in your Django projects, check out my video tutorial:
 
-[Custom Django Template Tags and Filters Tutorial](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+[![Enhance Your Django Forms: Custom Template Filters Explained](https://img.youtube.com/vi/tfVCNlhkUEg/maxresdefault.jpg)](https://www.youtube.com/watch?v=tfVCNlhkUEg)
 
 In this video, you'll learn:
 - How to integrate these custom template tags into your Django projects.
@@ -110,7 +110,7 @@ In this video, you'll learn:
 
 For an in-depth look at these custom template tags and filters, along with advanced usage scenarios, read my Medium article:
 
-[Enhancing Django Templates with Custom Tags and Filters](https://medium.com/@your_username/your-article-link)
+[Django Form Filters: Dynamic and Flexible Form Design](https://medium.com/@jeihunpiriyev/django-form-filtrl%C9%99ri-dinamik-v%C9%99-%C3%A7evik-form-dizayn%C4%B1-781bdfb360aa)
 
 ## 📄 License
 
