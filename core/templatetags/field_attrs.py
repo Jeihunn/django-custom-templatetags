@@ -56,7 +56,7 @@ def set_attr(value: BoundField, attributes_string: str) -> BoundField:
        {{ form.age|set_attr:"min=18,max=100" }}
 
     5. To use commas within attribute values:
-       {{ form.email|set_attr:"placeholder=Email Address\, Username" }}
+       {{ form.info|set_attr:"placeholder=Email Address\, Username" }}
 
     Parameters:
     - value (BoundField): The form field instance to modify.
@@ -81,9 +81,15 @@ def set_attr(value: BoundField, attributes_string: str) -> BoundField:
         i = 0
         while i < len(s):
             char = s[i]
+
+            # If the character is a delimiter and either `current` is empty or 
+            # the last added character is not an escape character,
+            # append the accumulated characters in `current` to `parts` and clear `current`.
             if char == delimiter and (not current or current[-1] != escape_char):
                 parts.append("".join(current))
                 current.clear()
+            # If the character is an escape character and the next character is a delimiter,
+            # append the delimiter to `current` and skip the next character.
             elif char == escape_char and i + 1 < len(s) and s[i + 1] == delimiter:
                 current.append(delimiter)
                 i += 1
@@ -91,6 +97,7 @@ def set_attr(value: BoundField, attributes_string: str) -> BoundField:
                 current.append(char)
             i += 1
 
+        # Append any remaining characters in `current` to `parts`.
         if current:
             parts.append("".join(current))
 
